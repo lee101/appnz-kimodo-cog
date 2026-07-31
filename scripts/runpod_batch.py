@@ -122,6 +122,13 @@ def terminate(pod_id: str) -> None:
     gql('mutation($id: String!) { podTerminate(input:{podId:$id}) }', {"id": pod_id})
 
 
+def pod_status(pod_id: str) -> dict | None:
+    query = """query($id: String!) { pod(input:{podId:$id}) {
+      id desiredStatus runtime { uptimeInSeconds }
+    } }"""
+    return gql(query, {"id": pod_id}).get("pod")
+
+
 def publish_archive(archive_path: Path, *, bucket: str, prefix: str, public_base: str) -> str:
     client = r2_client()
     with tempfile.TemporaryDirectory(prefix="kimodo-publish-") as temp:
@@ -226,6 +233,9 @@ def main() -> None:
             except ClientError as error:
                 if error.response.get("Error", {}).get("Code") not in {"404", "NoSuchKey"}:
                     raise
+            status = pod_status(pod_id)
+            if status is None or status.get("desiredStatus") in {"EXITED", "TERMINATED"}:
+                raise RuntimeError("RunPod exited before uploading the batch artifact")
             time.sleep(20)
         else:
             raise RuntimeError("batch did not upload its artifact before the hard deadline")
