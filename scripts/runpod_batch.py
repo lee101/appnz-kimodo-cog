@@ -213,6 +213,7 @@ def main() -> None:
     job_command = " && ".join(
         [
             "set -euo pipefail",
+            "export HF_HOME=/workspace/huggingface",
             "job_dir=$(mktemp -d /workspace/appnz-kimodo-XXXXXX)",
             "git clone --filter=blob:none --no-checkout " + shlex.quote(args.repo) + ' "$job_dir"',
             'cd "$job_dir"',

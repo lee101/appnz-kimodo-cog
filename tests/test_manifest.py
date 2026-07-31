@@ -2,6 +2,7 @@ import json
 
 import pytest
 
+from motion_cog.encoder import normalize_tokenizer_metadata
 from motion_cog.manifest import load_batch_manifest, parse_batch_manifest, slugify
 
 
@@ -38,3 +39,12 @@ def test_manifest_roundtrip_shape(tmp_path):
     assert item.name == "Wave"
     assert item.duration == 4.0
 
+
+def test_transformers_five_tokenizer_metadata_is_normalized(tmp_path):
+    config = tmp_path / "tokenizer_config.json"
+    config.write_text(json.dumps({"tokenizer_class": "TokenizersBackend", "model_max_length": 42}))
+    normalize_tokenizer_metadata(tmp_path)
+    assert json.loads(config.read_text()) == {
+        "tokenizer_class": "PreTrainedTokenizerFast",
+        "model_max_length": 42,
+    }

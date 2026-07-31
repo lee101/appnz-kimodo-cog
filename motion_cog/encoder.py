@@ -1,8 +1,20 @@
 from __future__ import annotations
 
+import json
 import os
+from pathlib import Path
 
 import numpy as np
+
+
+def normalize_tokenizer_metadata(base_path: str | os.PathLike[str]) -> None:
+    """Make Transformers 5 tokenizer metadata loadable by required 4.x runtime."""
+    config_path = Path(base_path) / "tokenizer_config.json"
+    value = json.loads(config_path.read_text(encoding="utf-8"))
+    if value.get("tokenizer_class") != "TokenizersBackend":
+        return
+    value["tokenizer_class"] = "PreTrainedTokenizerFast"
+    config_path.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
 
 
 class QuantizedLLM2VecEncoder:
@@ -12,6 +24,7 @@ class QuantizedLLM2VecEncoder:
         import torch
         from kimodo.model.llm2vec.llm2vec import LLM2Vec
 
+        normalize_tokenizer_metadata(base_path)
         self._device = device
         self.llm_dim = 4096
         self.model = LLM2Vec.from_pretrained(
@@ -60,4 +73,3 @@ class QuantizedLLM2VecEncoder:
 
     def get_device(self):
         return self.model.model.device
-
