@@ -11,7 +11,7 @@ bounded one-shot batch publisher for the app.nz animation library.
 - `predict.py`: one prompt to a downloadable ZIP for Cog/app.nz.
 - `runpod_handler.py`: RunPod Serverless adapter.
 - `batch.py`: many prompts through one warm model process.
-- `manifests/avatar-core.json`: 30 seeded motions covering nuanced idles,
+- `manifests/avatar-core.json`: 35 seeded motions covering nuanced idles,
   conversation, laugh/smile/reactions, walking, running, swimming, sitting,
   object attachment, dance, celebration, and stretching.
 - `scripts/runpod_batch.py`: capped RunPod pod, R2 staging, asset publication,

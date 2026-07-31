@@ -12,7 +12,7 @@ def test_slugify_is_asset_safe():
 
 def test_repository_manifest_is_valid():
     items = load_batch_manifest("manifests/avatar-core.json")
-    assert len(items) == 30
+    assert len(items) == 35
     assert len({item.id for item in items}) == len(items)
     assert {"idle", "walk", "run", "swim", "talk", "attach"} <= {
         tag for item in items for tag in item.tags
