@@ -216,6 +216,8 @@ def main() -> None:
             "git clone --filter=blob:none --no-checkout " + shlex.quote(args.repo) + ' "$job_dir"',
             'cd "$job_dir"',
             "git checkout --detach " + shlex.quote(args.ref),
+            "apt-get update -qq",
+            "apt-get install -y -qq cmake ninja-build",
             "python -m pip install --upgrade pip",
             "python -m pip install -r requirements-batch.txt",
             "python -m pip install --no-deps git+https://github.com/nv-tlabs/kimodo.git",

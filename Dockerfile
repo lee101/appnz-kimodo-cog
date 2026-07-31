@@ -7,7 +7,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     TEXT_ENCODER_MODE=local
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends git ca-certificates \
+    && apt-get install -y --no-install-recommends git ca-certificates cmake ninja-build \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -18,4 +18,3 @@ RUN python -m pip install --upgrade pip \
 
 COPY . /app
 CMD ["python", "-u", "runpod_handler.py"]
-

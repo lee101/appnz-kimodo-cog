@@ -4,7 +4,9 @@ build:
   gpu: true
   cuda: "12.4"
   system_packages:
+    - "cmake"
     - "git"
+    - "ninja-build"
   python_packages:
     - "accelerate==1.9.0"
     - "bitsandbytes==0.46.1"
