@@ -124,7 +124,7 @@ def terminate(pod_id: str) -> None:
 
 def pod_status(pod_id: str) -> dict | None:
     query = """query($id: String!) { pod(input:{podId:$id}) {
-      id desiredStatus runtime { uptimeInSeconds }
+      id desiredStatus latestTelemetry { state } runtime { uptimeInSeconds }
     } }"""
     return gql(query, {"id": pod_id}).get("pod")
 
@@ -197,25 +197,40 @@ def main() -> None:
     charge_budget(args.max_minutes)
     client = r2_client()
     staging_key = f"staging/kimodo/{int(time.time())}-{args.ref[:12]}.zip"
+    log_key = staging_key.removesuffix(".zip") + ".log"
     upload_url = client.generate_presigned_url(
         "put_object",
         Params={"Bucket": args.bucket, "Key": staging_key, "ContentType": "application/zip"},
         ExpiresIn=args.max_minutes * 60 + 600,
     )
+    log_upload_url = client.generate_presigned_url(
+        "put_object",
+        Params={"Bucket": args.bucket, "Key": log_key, "ContentType": "text/plain"},
+        ExpiresIn=args.max_minutes * 60 + 600,
+    )
     raw_manifest = f"https://raw.githubusercontent.com/lee101/appnz-kimodo-cog/{args.ref}/{args.manifest}"
-    command = " && ".join(
+    job_command = " && ".join(
         [
             "set -euo pipefail",
             "git clone --filter=blob:none --no-checkout " + shlex.quote(args.repo) + " /workspace/appnz-kimodo-cog",
             "cd /workspace/appnz-kimodo-cog",
             "git checkout --detach " + shlex.quote(args.ref),
             "python -m pip install --upgrade pip",
-            "python -m pip install -r requirements-gpu.txt",
+            "python -m pip install -r requirements-batch.txt",
             "python -m pip install --no-deps git+https://github.com/nv-tlabs/kimodo.git",
             "curl -fsSL " + shlex.quote(raw_manifest) + " -o /workspace/batch.json",
             "python batch.py --manifest /workspace/batch.json --output /workspace/kimodo-motions.zip --upload-url "
             + shlex.quote(upload_url),
         ]
+    )
+    command = (
+        "set -o pipefail; ("
+        + job_command
+        + ") 2>&1 | tee /tmp/appnz-kimodo-batch.log; "
+        + "status=${PIPESTATUS[0]}; "
+        + "curl -fsS -X PUT -H 'content-type: text/plain' --data-binary @/tmp/appnz-kimodo-batch.log "
+        + shlex.quote(log_upload_url)
+        + " >/dev/null; exit $status"
     )
     ttl_epoch = int(time.time()) + args.max_minutes * 60
     pod_name = f"{TAG}-{int(time.time())}"
@@ -233,8 +248,22 @@ def main() -> None:
             except ClientError as error:
                 if error.response.get("Error", {}).get("Code") not in {"404", "NoSuchKey"}:
                     raise
+            try:
+                client.head_object(Bucket=args.bucket, Key=log_key)
+                log = client.get_object(Bucket=args.bucket, Key=log_key)["Body"].read().decode(
+                    "utf-8", errors="replace"
+                )
+                raise RuntimeError("RunPod bootstrap failed:\n" + "\n".join(log.splitlines()[-80:]))
+            except ClientError as error:
+                if error.response.get("Error", {}).get("Code") not in {"404", "NoSuchKey"}:
+                    raise
             status = pod_status(pod_id)
-            if status is None or status.get("desiredStatus") in {"EXITED", "TERMINATED"}:
+            telemetry = (status or {}).get("latestTelemetry") or {}
+            if (
+                status is None
+                or status.get("desiredStatus") in {"EXITED", "TERMINATED"}
+                or telemetry.get("state") == "exited"
+            ):
                 raise RuntimeError("RunPod exited before uploading the batch artifact")
             time.sleep(20)
         else:
@@ -249,6 +278,7 @@ def main() -> None:
     finally:
         try:
             client.delete_object(Bucket=args.bucket, Key=staging_key)
+            client.delete_object(Bucket=args.bucket, Key=log_key)
         finally:
             terminate(pod_id)
             print(f"terminated RunPod pod {pod_id}")
