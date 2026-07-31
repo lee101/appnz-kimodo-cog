@@ -22,6 +22,7 @@ RUNPOD_API = "https://api.runpod.io/graphql"
 TAG = "appnz-kimodo-batch"
 DEFAULT_MAX_MINUTES = 45
 DEFAULT_DAILY_MINUTES = 60
+KIMODO_COMMIT = "1aece8c124d73d255ceff5086d983b844c9f4e94"
 GPU_PREFERENCE = (
     "NVIDIA GeForce RTX 4090",
     "NVIDIA RTX A5000",
@@ -220,7 +221,11 @@ def main() -> None:
             "apt-get install -y -qq cmake ninja-build",
             "python -m pip install --upgrade pip",
             "python -m pip install -r requirements-batch.txt",
-            "python -m pip install --no-deps git+https://github.com/nv-tlabs/kimodo.git",
+            'kimodo_dir=$(mktemp -d /workspace/kimodo-source-XXXXXX)',
+            'git clone --filter=blob:none https://github.com/nv-tlabs/kimodo.git "$kimodo_dir"',
+            'git -C "$kimodo_dir" checkout --detach ' + KIMODO_COMMIT,
+            'git -C "$kimodo_dir" apply "$job_dir/patches/kimodo-python3-cmake.patch"',
+            'python -m pip install --no-deps "$kimodo_dir"',
             "curl -fsSL " + shlex.quote(raw_manifest) + " -o /workspace/batch.json",
             "python batch.py --manifest /workspace/batch.json --output /workspace/kimodo-motions.zip --upload-url "
             + shlex.quote(upload_url),

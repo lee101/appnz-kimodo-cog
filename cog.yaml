@@ -14,5 +14,5 @@ build:
     - "peft==0.17.0"
     - "transformers==4.57.3"
   run:
-    - "python -m pip install --no-deps git+https://github.com/nv-tlabs/kimodo.git"
+    - "git clone --filter=blob:none https://github.com/nv-tlabs/kimodo.git /tmp/kimodo && git -C /tmp/kimodo checkout --detach 1aece8c124d73d255ceff5086d983b844c9f4e94 && sed -i 's/-DPYTHON_EXECUTABLE=/-DPython3_EXECUTABLE=/' /tmp/kimodo/setup.py /tmp/kimodo/MotionCorrection/setup.py && python -m pip install --no-deps /tmp/kimodo"
 predict: "predict.py:Predictor"

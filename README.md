@@ -45,6 +45,11 @@ The first build/download is large: expect about 6 GB of model weights. An
 NVIDIA GPU with at least 12 GB VRAM is recommended; the pre-quantized encoder
 uses about 5 GB instead of the stock encoder's roughly 16 GB.
 
+Kimodo source is pinned to commit
+`1aece8c124d73d255ceff5086d983b844c9f4e94`. The build applies a one-line
+CMake variable correction so its native post-processor links against the
+container's active Python rather than Ubuntu's system Python.
+
 ## Run on app.nz
 
 Build and push the Linux AMD64 image, then use Cog Studio:
@@ -121,4 +126,3 @@ python -m pip install -e '.[test]'
 pytest
 ruff check .
 ```
-

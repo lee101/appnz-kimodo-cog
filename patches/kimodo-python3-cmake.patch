@@ -1,0 +1,26 @@
+diff --git a/setup.py b/setup.py
+index 07b13eb..ee65e31 100644
+--- a/setup.py
++++ b/setup.py
+@@ -31,7 +31,7 @@ class CMakeBuild(build_ext):
+         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
+         cmake_args = [
+             f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}",
+-            f"-DPYTHON_EXECUTABLE={sys.executable}",
++            f"-DPython3_EXECUTABLE={sys.executable}",
+         ]
+ 
+         cfg = "Debug" if self.debug else "Release"
+diff --git a/MotionCorrection/setup.py b/MotionCorrection/setup.py
+index 191519c..1d30000 100644
+--- a/MotionCorrection/setup.py
++++ b/MotionCorrection/setup.py
+@@ -36,7 +36,7 @@ class CMakeBuild(build_ext):
+         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
+         cmake_args = [
+             f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}",
+-            f"-DPYTHON_EXECUTABLE={sys.executable}",
++            f"-DPython3_EXECUTABLE={sys.executable}",
+         ]
+ 
+         cfg = "Debug" if self.debug else "Release"

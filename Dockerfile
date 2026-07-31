@@ -13,8 +13,14 @@ RUN apt-get update \
 WORKDIR /app
 COPY requirements-gpu.txt .
 RUN python -m pip install --upgrade pip \
-    && python -m pip install -r requirements-gpu.txt \
-    && python -m pip install --no-deps git+https://github.com/nv-tlabs/kimodo.git
+    && python -m pip install -r requirements-gpu.txt
+
+COPY patches /app/patches
+RUN git clone --filter=blob:none https://github.com/nv-tlabs/kimodo.git /tmp/kimodo \
+    && git -C /tmp/kimodo checkout --detach 1aece8c124d73d255ceff5086d983b844c9f4e94 \
+    && git -C /tmp/kimodo apply /app/patches/kimodo-python3-cmake.patch \
+    && python -m pip install --no-deps /tmp/kimodo \
+    && rm -rf /tmp/kimodo
 
 COPY . /app
 CMD ["python", "-u", "runpod_handler.py"]
