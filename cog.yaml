@@ -1,0 +1,16 @@
+image: "registry.app.nz/appnz-kimodo-motion:latest"
+build:
+  python_version: "3.11"
+  gpu: true
+  cuda: "12.4"
+  system_packages:
+    - "git"
+  python_packages:
+    - "accelerate==1.9.0"
+    - "bitsandbytes==0.46.1"
+    - "huggingface-hub==0.34.3"
+    - "peft==0.17.0"
+    - "transformers==4.57.3"
+  run:
+    - "python -m pip install --no-deps git+https://github.com/nv-tlabs/kimodo.git"
+predict: "predict.py:Predictor"

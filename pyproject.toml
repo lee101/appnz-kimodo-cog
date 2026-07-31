@@ -1,0 +1,24 @@
+[project]
+name = "appnz-kimodo-cog"
+version = "0.1.0"
+description = "Portable Cog and bounded batch pipeline for NVIDIA Kimodo text-to-motion"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+dependencies = [
+  "boto3>=1.35,<2",
+  "huggingface-hub>=0.34,<2",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<9", "ruff>=0.12,<1"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+

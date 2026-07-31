@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "name": "kimodo-motion",
+  "description": "Text-to-motion generation with NVIDIA Kimodo SOMA-RP, exported as standard-T BVH and raw NPZ.",
+  "license": "MIT adapter; NVIDIA Open Model License checkpoint; Meta Llama 3 Community License text encoder",
+  "repository": "https://github.com/lee101/appnz-kimodo-cog",
+  "image": "registry.app.nz/appnz-kimodo-motion:latest",
+  "architecture": "linux/amd64",
+  "cog": {
+    "port": 5000,
+    "health": "/health-check",
+    "schema": "/openapi.json",
+    "predictions": "/predictions"
+  },
+  "runpod": {
+    "serverlessStartCommand": "python -u /app/runpod_handler.py",
+    "handler": "runpod_handler.handler",
+    "minimumWorkers": 0,
+    "recommendedIdleSeconds": 90
+  },
+  "appnz": {
+    "template": "kimodo-motion",
+    "deployUrl": "https://app.nz/cogs?template=kimodo-motion",
+    "scaleToZero": true
+  }
+}
+
