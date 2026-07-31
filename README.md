@@ -17,6 +17,7 @@ bounded one-shot batch publisher for the app.nz animation library.
 - `scripts/runpod_batch.py`: capped RunPod pod, R2 staging, asset publication,
   generated index, and unconditional teardown.
 - `docs/AUDIO2FACE_BROWSER.md`: current local/browser Audio2Face feasibility.
+- `docs/QUALITY_REPORT.md`: VRM contact-sheet review and clip-selection notes.
 
 ## Model terms
 
