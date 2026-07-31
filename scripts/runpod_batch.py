@@ -238,6 +238,8 @@ def main() -> None:
     print(f"created {pod_name} ({pod_id}); hard cap {args.max_minutes} minutes")
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
+    local_log = output.with_suffix(".log")
+    completed = False
     try:
         deadline = time.time() + args.max_minutes * 60
         while time.time() < deadline:
@@ -253,6 +255,7 @@ def main() -> None:
                 log = client.get_object(Bucket=args.bucket, Key=log_key)["Body"].read().decode(
                     "utf-8", errors="replace"
                 )
+                local_log.write_text(log, encoding="utf-8")
                 raise RuntimeError("RunPod bootstrap failed:\n" + "\n".join(log.splitlines()[-80:]))
             except ClientError as error:
                 if error.response.get("Error", {}).get("Code") not in {"404", "NoSuchKey"}:
@@ -274,11 +277,13 @@ def main() -> None:
             prefix=args.prefix,
             public_base=args.public_base.rstrip("/"),
         )
+        completed = True
         print(json.dumps({"archive": str(output), "indexUrl": index_url}, indent=2))
     finally:
         try:
             client.delete_object(Bucket=args.bucket, Key=staging_key)
-            client.delete_object(Bucket=args.bucket, Key=log_key)
+            if completed:
+                client.delete_object(Bucket=args.bucket, Key=log_key)
         finally:
             terminate(pod_id)
             print(f"terminated RunPod pod {pod_id}")
