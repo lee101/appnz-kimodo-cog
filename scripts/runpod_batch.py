@@ -212,8 +212,9 @@ def main() -> None:
     job_command = " && ".join(
         [
             "set -euo pipefail",
-            "git clone --filter=blob:none --no-checkout " + shlex.quote(args.repo) + " /workspace/appnz-kimodo-cog",
-            "cd /workspace/appnz-kimodo-cog",
+            "job_dir=$(mktemp -d /workspace/appnz-kimodo-XXXXXX)",
+            "git clone --filter=blob:none --no-checkout " + shlex.quote(args.repo) + ' "$job_dir"',
+            'cd "$job_dir"',
             "git checkout --detach " + shlex.quote(args.ref),
             "python -m pip install --upgrade pip",
             "python -m pip install -r requirements-batch.txt",
