@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "files": [
+    {
+      "path": "animflow/README.md",
+      "sha256": "88a216c871f00b50e77b948fde77a53e7c062d2108e4264e6fd6c30f5bad862e"
+    },
+    {
+      "path": "animflow/src/ui/combatPanel.js",
+      "sha256": "6c57cf212b18f93cafb60d14f7711c98cdf6414018e9c43b9efd31a48dff5630"
+    },
+    {
+      "path": "animflow/src/vrm/combat-library.js",
+      "sha256": "50ff8589f6cfd7ece3bd50954a64256947f6f1eb135e388388988c1cddb83942"
+    },
+    {
+      "path": "animflow/src/vrm/vrmLayer.js",
+      "sha256": "9764a2e0484148c4b8d651edb5d50b672ee10c26b31175fca049fcc4c455a46f"
+    },
+    {
+      "path": "games/engine/COMBAT-MOTION.md",
+      "sha256": "bfc363a9d1276630efa0c74f786fbfcc539d5a01614c6182043ae7542307765a"
+    },
+    {
+      "path": "hiresnz2/.gitignore",
+      "sha256": "48d1b25e33c5e4544e1e0083d202e07794ad4d4927729c96fd621c6320c5b4be"
+    },
+    {
+      "path": "animflow/src/vrm/kimodo-library.js",
+      "sha256": "09c90ccf576cee51df024d69d0d5977c577284f39b44924eadde57177e8429d6"
+    },
+    {
+      "path": "animflow/src/ui/kimodoPanel.js",
+      "sha256": "21f30f6800d39c627e094c635b506406f8702121742dc882fa2a6ea2a28cbbbd"
+    },
+    {
+      "path": "animflow/test/kimodo-library.test.js",
+      "sha256": "4b16f13188b698fa578bd96d1728dea08ab9af3bf910c7234e511051c3d71f19"
+    },
+    {
+      "path": "animflow/test/fixtures/kimodo-wave-3frames.bvh",
+      "sha256": "b54892a9fcf008119e674877a25ae78f41897d423beb6a8511d69db450a10d61"
+    },
+    {
+      "path": "animflow/visualbench/check-kimodo-library.mjs",
+      "sha256": "def968616b635c6910f272f235f7661a408800be4fa893820d45e2917893412b"
+    },
+    {
+      "path": "animflow/visualbench/capture-attack-anchors.mjs",
+      "sha256": "042e933938d4dfc32cdd10b9daab7eb17899cb91fe24f0ace6bf274113664dc6"
+    },
+    {
+      "path": "animflow/public/motions/kimodo/index.json",
+      "sha256": "e69bfffd87332426365a116718e58746e99c00e8e346f356387fa2d90da86aba"
+    },
+    {
+      "path": "animflow/public/motions/anchors/index.json",
+      "sha256": "4fd153de182782699d69a8903e64cb0d82bd39c8379601d72960799bec11571b"
+    },
+    {
+      "path": "animflow/public/motions/anchors/wolf-rest.png",
+      "sha256": "94c6dceff6ba2f30e7b413abdc0acffb8486aaa02a4090b9a7d54bd46428fede"
+    },
+    {
+      "path": "animflow/public/motions/anchors/werewolf-rest.png",
+      "sha256": "a934b9812f6943e21c0eb6c7d0701dc86c652c5450300d45fb3f08ecedf62bd0"
+    },
+    {
+      "path": "animflow/public/motions/anchors/werewolf-loop.request.json",
+      "sha256": "1fcd9f3d0374fa680b6aad4a623bfb16524f7304c1f6fd70a5a8c646358be10f"
+    }
+  ],
+  "runtimeBvhAssetsExcluded": 35,
+  "workspacePatchReverseCheck": "passed"
+}
