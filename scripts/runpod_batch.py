@@ -162,7 +162,8 @@ def publish_archive(archive_path: Path, *, bucket: str, prefix: str, public_base
                     str(metadata_source),
                     bucket,
                     metadata_key,
-                    ExtraArgs={"ContentType": "application/json", "CacheControl": "public,max-age=31536000,immutable"},
+                    ExtraArgs={"ContentType": "application/json",
+                               "CacheControl": "public,max-age=31536000,immutable"},
                 )
         published_index = extracted / "published-index.json"
         published_index.write_text(json.dumps(index, indent=2) + "\n", encoding="utf-8")
@@ -182,6 +183,8 @@ def main() -> None:
     parser.add_argument("--ref", required=True, help="immutable public git commit SHA")
     parser.add_argument("--manifest", default="manifests/avatar-core.json")
     parser.add_argument("--max-minutes", type=int, default=DEFAULT_MAX_MINUTES)
+    parser.add_argument("--diffusion-steps", type=int, default=100)
+    parser.add_argument("--num-samples", type=int, default=1)
     parser.add_argument("--image", default="runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04")
     parser.add_argument("--bucket", default=os.getenv("APPSTATIC_BUCKET", "appstatic"))
     parser.add_argument("--prefix", default="app/static/animation-library/generated/kimodo-v1")
@@ -192,8 +195,10 @@ def main() -> None:
         args.public_base = "https://" + args.public_base
     if not 5 <= args.max_minutes <= 60:
         raise SystemExit("--max-minutes must be 5-60")
-    if len(args.ref) < 40 or any(character not in "0123456789abcdef" for character in args.ref.lower()):
+    if len(args.ref) != 40 or any(character not in "0123456789abcdef" for character in args.ref.lower()):
         raise SystemExit("--ref must be an immutable commit SHA")
+    if not 20 <= args.diffusion_steps <= 150 or not 1 <= args.num_samples <= 4:
+        raise SystemExit("--diffusion-steps must be 20-150 and --num-samples must be 1-4")
 
     charge_budget(args.max_minutes)
     client = r2_client()
@@ -228,7 +233,8 @@ def main() -> None:
             'git -C "$kimodo_dir" apply "$job_dir/patches/kimodo-python3-cmake.patch"',
             'python -m pip install --no-deps "$kimodo_dir"',
             "curl -fsSL " + shlex.quote(raw_manifest) + " -o /workspace/batch.json",
-            "python batch.py --manifest /workspace/batch.json --output /workspace/kimodo-motions.zip --upload-url "
+            "python batch.py --manifest /workspace/batch.json --output /workspace/kimodo-motions.zip "
+            f"--diffusion-steps {args.diffusion_steps} --num-samples {args.num_samples} --upload-url "
             + shlex.quote(upload_url),
         ]
     )

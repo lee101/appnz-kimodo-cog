@@ -13,7 +13,7 @@ except ImportError:
 
     Path = FSPath
 
-from motion_cog.manifest import BatchItem
+from motion_cog.manifest import BatchItem, validate_generation_inputs
 from motion_cog.service import MotionService
 
 
@@ -29,15 +29,15 @@ class Predictor(BasePredictor):
         seed: int = Input(default=41, ge=0, le=2_147_483_647),
         diffusion_steps: int = Input(default=100, ge=20, le=150),
     ) -> Path:
-        prompt = prompt.strip()
-        if not prompt or len(prompt) > 800:
-            raise ValueError("prompt must contain 1-800 characters")
+        inputs = validate_generation_inputs({"prompt": prompt, "duration": duration,
+                                             "num_samples": num_samples, "seed": seed,
+                                             "diffusion_steps": diffusion_steps})
         item = BatchItem(
             id="generated-motion",
             name="Generated motion",
-            prompt=prompt,
-            duration=duration,
-            seed=seed,
+            prompt=inputs["prompt"],
+            duration=inputs["duration"],
+            seed=inputs["seed"],
             tags=("generated",),
         )
         return Path(
@@ -47,4 +47,3 @@ class Predictor(BasePredictor):
                 diffusion_steps=diffusion_steps,
             )
         )
-

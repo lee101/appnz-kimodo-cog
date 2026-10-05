@@ -127,3 +127,45 @@ python -m pip install -e '.[test]'
 pytest
 ruff check .
 ```
+
+## Reusable animation API (CPU only)
+
+`library_server.py` serves the existing generated archive, never loads model
+weights, and never provisions a GPU. This is separate from the Kimodo Cog
+fresh-generation path and must not be labeled as NVIDIA ACE generation.
+
+```bash
+python library_server.py --archive outputs/kimodo-avatar-core.zip --port 9092
+curl 'http://127.0.0.1:9092/v1/animations/library?q=wave'
+curl http://127.0.0.1:9092/v1/animations/generations \
+  -H 'Content-Type: application/json' \
+  -d '{"provider":"kimodo-library","asset_id":"kimodo-wave-friendly","rig_type":"biped"}'
+python library_server.py --export ../animflow/public
+```
+
+The library includes 35 generated candidates with model, seed, prompt, license,
+SHA-256, and immutable content-addressed BVH URLs. Reuse returns a stable result
+ID, `cached: true`, and zero new GPU-generation seconds. New prompts/providers
+are rejected rather than silently substituted with existing or procedural data.
+`GET /health` reports that GPU loading and new generation are disabled.
+`deploy/kimodo-library.service` bounds this loopback-only API to 256 MiB RAM,
+zero swap, one CPU, and 16 tasks; deploy a pinned release under its working path.
+Put authentication/rate limits in front before exposing a fresh-generation API.
+
+AnimFlow's Motion Capture sidebar browses these candidates lazily, verifies BVH
+checksums, and bakes SOMA-77 rotations to portable `vrm-pose-clip/v1`. Metadata
+and provenance survive project indexing and JSON export. Wolf/quadruped claims
+are rejected. Loops stay off: a requested loop is not evidence of a reviewed
+seam. The browser preview folds unmapped ancestors, omits finger/facial and
+horizontal root motion, normalizes vertical motion against the first frame,
+and scales root height to the target avatar's leg length. Review target-avatar
+contacts; this is not a universal anatomical retargeter.
+
+For fresh combat candidates, `manifests/combat-candidates.json` contains three
+short one-shot biped attacks/reactions (11 seconds total, one sample each).
+Use the existing bounded batch launcher only with an approved spend cap. Start
+with a 60-step candidate pass, then rerun only failed seeds at 100 steps; lower
+step counts are not a verified quality-equivalent optimization. No training,
+fresh generation, or GPU rental is needed to reuse the published library.
+RunPod input validation rejects non-finite durations and oversized sample/step
+counts before calling the GPU predictor; model execution uses inference mode.

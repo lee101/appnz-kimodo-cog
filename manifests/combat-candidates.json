@@ -1,0 +1,31 @@
+{
+  "motions": [
+    {
+      "id": "werewolf-claw-right",
+      "name": "Biped claw slash",
+      "prompt": "A standing human performer acts a single fierce right-hand claw slash: crouched wind-up, a broad diagonal swipe, torso follow-through, and balanced recovery to standing. No walking. Full body stays planted in place.",
+      "duration": 4,
+      "seed": 1041,
+      "tags": ["combat", "claw", "attack", "biped", "candidate"],
+      "loop": false
+    },
+    {
+      "id": "sword-slash-overhead",
+      "name": "Overhead sword slash",
+      "prompt": "A standing human performs one two-handed overhead sword swing with an imaginary sword: both hands rise together, a strong downward cut, knees flex, and a calm balanced recovery. Feet stay in place.",
+      "duration": 4,
+      "seed": 1042,
+      "tags": ["combat", "sword", "attack", "biped", "candidate"],
+      "loop": false
+    },
+    {
+      "id": "hit-recoil-recover",
+      "name": "Hit recoil and recovery",
+      "prompt": "A standing human reacts to one impact to the upper chest: shoulders recoil, torso leans briefly backward, knees absorb the force, then the person returns to a stable ready stance. Feet remain planted.",
+      "duration": 3,
+      "seed": 1043,
+      "tags": ["combat", "hit", "recoil", "biped", "candidate"],
+      "loop": false
+    }
+  ]
+}

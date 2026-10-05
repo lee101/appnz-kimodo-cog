@@ -38,7 +38,7 @@ class QuantizedLLM2VecEncoder:
             parameter.requires_grad = False
 
     @classmethod
-    def from_hub(cls, repo_id: str, device: str = "cuda:0") -> "QuantizedLLM2VecEncoder":
+    def from_hub(cls, repo_id: str, device: str = "cuda:0") -> QuantizedLLM2VecEncoder:
         from huggingface_hub import snapshot_download
 
         base_path = snapshot_download(

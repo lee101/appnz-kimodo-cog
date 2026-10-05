@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -8,6 +9,28 @@ from pathlib import Path
 MAX_BATCH_ITEMS = 64
 MAX_DURATION_SECONDS = 10.0
 SLUG_RE = re.compile(r"[^a-z0-9]+")
+
+
+def validate_generation_inputs(inputs: dict) -> dict:
+    allowed = {"prompt", "duration", "num_samples", "seed", "diffusion_steps"}
+    if not isinstance(inputs, dict) or set(inputs) - allowed:
+        raise ValueError("unsupported motion inputs")
+    prompt = inputs.get("prompt")
+    if not isinstance(prompt, str) or not 1 <= len(prompt.strip()) <= 800:
+        raise ValueError("prompt must contain 1-800 characters")
+    duration = inputs.get("duration", 4.0)
+    if (isinstance(duration, bool) or not isinstance(duration, (int, float))
+            or not math.isfinite(duration) or not 1 <= duration <= 10):
+        raise ValueError("duration must be 1-10 finite seconds")
+    result = {"prompt": prompt.strip(), "duration": float(duration)}
+    for name, default, minimum, maximum in [("num_samples", 1, 1, 4),
+                                           ("seed", 41, 0, 2_147_483_647),
+                                           ("diffusion_steps", 100, 20, 150)]:
+        value = inputs.get(name, default)
+        if type(value) is not int or not minimum <= value <= maximum:
+            raise ValueError(f"{name} must be an integer between {minimum} and {maximum}")
+        result[name] = value
+    return result
 
 
 @dataclass(frozen=True)
@@ -75,4 +98,3 @@ def load_batch_manifest(path: str | Path) -> list[BatchItem]:
     if not isinstance(value, dict):
         raise ValueError("manifest root must be an object")
     return parse_batch_manifest(value)
-

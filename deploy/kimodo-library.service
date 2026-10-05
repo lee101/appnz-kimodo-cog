@@ -1,0 +1,24 @@
+[Unit]
+Description=CPU-only reusable Kimodo animation library
+After=network.target
+
+[Service]
+Type=simple
+User=administrator
+WorkingDirectory=/home/administrator/.local/share/kimodo-library/current
+ExecStart=/usr/bin/python3 -B library_server.py --host 127.0.0.1 --port 9092
+Restart=on-failure
+RestartSec=5
+MemoryHigh=192M
+MemoryMax=256M
+MemorySwapMax=0
+CPUQuota=100%
+TasksMax=16
+OOMScoreAdjust=300
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+
+[Install]
+WantedBy=multi-user.target

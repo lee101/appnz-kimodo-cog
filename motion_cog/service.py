@@ -55,17 +55,18 @@ class MotionService:
         seed_everything(item.seed)
         frames = int(round(item.duration * float(self.model.fps)))
         started = time.time()
-        output = self.model(
-            [item.prompt],
-            [frames],
-            constraint_lst=[],
-            num_denoising_steps=diffusion_steps,
-            num_samples=num_samples,
-            multi_prompt=True,
-            num_transition_frames=5,
-            post_processing=True,
-            return_numpy=True,
-        )
+        with torch.inference_mode():
+            output = self.model(
+                [item.prompt],
+                [frames],
+                constraint_lst=[],
+                num_denoising_steps=diffusion_steps,
+                num_samples=num_samples,
+                multi_prompt=True,
+                num_transition_frames=5,
+                post_processing=True,
+                return_numpy=True,
+            )
         item_dir = output_dir / item.id
         item_dir.mkdir(parents=True, exist_ok=False)
         skeleton = self.model.skeleton
@@ -185,4 +186,3 @@ def build_index(items: list[BatchItem], output_dir: Path) -> dict:
             }
         )
     return {"version": 1, "generator": DEFAULT_MODEL, "assets": assets}
-
